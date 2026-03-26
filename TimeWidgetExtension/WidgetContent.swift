@@ -127,6 +127,24 @@ struct TimeWidgetEntryView: View {
             }
         }
         .padding()
+        .widgetBackground(Color("WidgetBackground"))
+//        .frame(maxWidth: .infinity, maxHeight: .infinity)
+//        .background(Color("regularMaterial"))
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func widgetBackground(_ color: Color) -> some View {
+        if #available(macOS 14.0, *) {
+            // macOS 14.0+
+            self.containerBackground(.regularMaterial, for: .widget)
+//            self.widgetAccentable()
+            
+        } else {
+            // macOS 13
+            self.background(color)
+        }
     }
 }
 
