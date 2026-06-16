@@ -87,6 +87,35 @@ struct ContentView: View {
                                 newDate in
                                 dateToJDs(from: newDate)
                             }
+                        
+                        HStack(spacing: 3) {
+                            Text("UTC")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .padding(.leading, 4)
+                            
+                            TextField("offset", text: $tzInputString)
+                                .frame(width: 50)
+                                .textFieldStyle(.roundedBorder)
+                                .multilineTextAlignment(.center)
+                                .font(selectedFormat == 1 ? .system(.body, design: .default) : .system(.body, design: .monospaced))
+                                .onSubmit {
+                                    updateTimeZone(fromString: tzInputString)
+                                }
+                            
+                            Stepper("", value: $tzDouble, in: -12...14, step: 1)
+                                .labelsHidden()
+                                .onChange(of: tzDouble) {
+                                    newValue in
+                                    let sign = newValue > 0 ? "+" : ""
+
+                                    tzInputString = "\(sign)\(String(format: "%g", newValue))"
+                                    
+                                    if selectedFormat == 2 {
+                                        dateString = dateToISO8601(selectedDate)
+                                    }
+                                }
+                        }
                     
                     } else if selectedFormat == 2 {
                         // ISO 8601 string
@@ -112,34 +141,6 @@ struct ContentView: View {
                             .buttonStyle(.plain)
                             .help("Copy date string")
                         }
-                    }
-                    
-                    HStack(spacing: 3) {
-                        Text("UTC")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .padding(.leading, 4)
-                        
-                        TextField("offset", text: $tzInputString)
-                            .frame(width: 50)
-                            .textFieldStyle(.roundedBorder)
-                            .multilineTextAlignment(.center)
-                            .onSubmit {
-                                updateTimeZone(fromString: tzInputString)
-                            }
-                        
-                        Stepper("", value: $tzDouble, in: -12...14, step: 1)
-                            .labelsHidden()
-                            .onChange(of: tzDouble) {
-                                newValue in
-                                let sign = newValue > 0 ? "+" : ""
-
-                                tzInputString = "\(sign)\(String(format: "%g", newValue))"
-                                
-                                if selectedFormat == 2 {
-                                    dateString = dateToISO8601(selectedDate)
-                                }
-                            }
                     }
                     
                     Divider()
@@ -286,6 +287,10 @@ struct ContentView: View {
         let formatter = ISO8601DateFormatter()
         
         formatter.formatOptions = [.withInternetDateTime]
+        
+        let tzInputString = String(string.suffix(6))
+        updateTimeZone(fromString: tzInputString)
+        formatter.timeZone = TimeZone(secondsFromGMT: Int(tzDouble * 3600))
         
         return formatter.date(from: string)
     }
