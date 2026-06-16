@@ -12,10 +12,12 @@ struct ContentView: View {
     @State private var timeZoneOffset: Double = 0.0
     @State private var tzInputString: String = "0"
     
+    @State private var selectedStyle: Int = 1
+    
     @State private var selectedDate = Date()
     
     // String states are used for the text fields for typing comfortably without the numbers jumping around until hitting Enter.
-    @State private var jdString: String = ""
+    @State private var jdString:  String = ""
     @State private var mjdString: String = ""
     
     // Timer to update "Now" if needed, or just for reference
@@ -74,13 +76,14 @@ struct ContentView: View {
             GroupBox(label: Label("Calendar Date", systemImage: "calendar")) {
                 HStack(spacing: 15) {
                     DatePicker("", selection: datePickerBinding, displayedComponents: [.date, .hourAndMinute])
-                            .labelsHidden()
-                            .datePickerStyle(.stepperField)
-                            .environment(\.timeZone, TimeZone(secondsFromGMT: Int(timeZoneOffset * 3600))!)
-                            .onChange(of: selectedDate) {
-                                newDate in
-                                dateToJDs(from: newDate)
-                            }
+                        .labelsHidden()
+                        .datePickerStyle(.stepperField)
+                        .environment(\.timeZone, TimeZone(secondsFromGMT: Int(timeZoneOffset * 3600))!)
+                        .environment(\.locale, Locale(identifier: "en-CA"))
+                        .onChange(of: selectedDate) {
+                            newDate in
+                            dateToJDs(from: newDate)
+                        }
                     
                     HStack(spacing: 3) {
                         Text("UTC")
@@ -89,7 +92,7 @@ struct ContentView: View {
                             .padding(.leading, 4)
                         
                         TextField("offset", text: $tzInputString)
-                            .frame(width: 65)
+                            .frame(width: 50)
                             .textFieldStyle(.roundedBorder)
                             .multilineTextAlignment(.center)
                             .onSubmit {
@@ -102,10 +105,26 @@ struct ContentView: View {
                                 let sign = newValue > 0 ? "+" : ""
                                 tzInputString = "\(sign)\(String(format: "%g", newValue))"
                             }
+                    }
+                    
+                    Spacer()
+                    Divider()
+                    Spacer()
+                    
+                    HStack(spacing: 0) {
+                        Text("Format:")
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                        
+                        Picker("", selection: $selectedStyle) {
+                            Text("Date Picker").tag(1)
+                            Text("Strings").tag(2)
                         }
+                        .pickerStyle(.menu)
                     }
                 }
-                .padding(10)
+            }
+            .padding(20)
             
             // MARK: JD Section
             GroupBox(label: Label("Julian Date (JD)", systemImage: "number.square")) {
@@ -157,9 +176,9 @@ struct ContentView: View {
             Spacer()
         }
         .padding()
-        .frame(minWidth: 400, minHeight: 400) // Set a good default window size for Mac
+        .frame(minWidth: 400, minHeight: 410)
         .onAppear {
-            // When initialize the app
+            // initial setting
             updateAll(fromDate: Date())
         }
     }
