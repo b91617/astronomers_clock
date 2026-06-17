@@ -222,7 +222,7 @@ struct ContentView: View {
             Spacer()
         }
         .padding()
-        .frame(minWidth: 700, minHeight: 350)
+        .frame(minWidth: 600, minHeight: 380)
         .onAppear {
             // initial setting
             updateAll(fromDate: Date())
@@ -317,6 +317,7 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .frame(width: 600, height: 380)
 }
 
 //extension View {
