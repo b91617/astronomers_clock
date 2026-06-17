@@ -9,8 +9,10 @@ import SwiftUI
 import Combine
 
 struct ContentView: View {
-    @State private var tzDouble:       Double = 0.0
-    @State private var tzInputString:  String = "0"
+    @State private var selectedTool: Int = 0
+
+    @State private var tzDouble:      Double = 0.0
+    @State private var tzInputString: String = "0"
     
     @State private var selectedFormat: Int = 1
     @State private var selectedDate = Date()
@@ -54,13 +56,20 @@ struct ContentView: View {
     // BODY //
     var body: some View {
         VStack(spacing: 20) {
+//            Picker("", selection: $selectedTool) {
+//                Text("Date Converter").tag(0)
+//                Text("Coordinate Conversion").tag(1)
+//                Text("Distance & Magnitude Calculator").tag(2)
+//            }
+//            .pickerStyle(.segmented)
+//            .liquidGlassIfAvailable()
             
             // MARK: - Header
             HStack {
                 Image(systemName: "clock")
                     .imageScale(.large)
                     .foregroundStyle(.tint)
-                Text("Julian Dates Converter")
+                Text("Dates Converter")
                     .font(.headline)
                 
                 Spacer()
@@ -125,7 +134,7 @@ struct ContentView: View {
                                 .font(.system(.body, design: .monospaced))
                                 .frame(minWidth: 150)
                                 .onSubmit {
-                                    if let parsed = ISO8601ToDate(dateString) {
+                                    if let parsed = iso8601ToDate(dateString) {
                                         updateAll(fromDate: parsed)
                                     }
                                 }
@@ -161,7 +170,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .padding(20)
+            .padding(15)
             
             // MARK: JD Section
             GroupBox(label: Label("Julian Date (JD)", systemImage: "number.square")) {
@@ -213,7 +222,7 @@ struct ContentView: View {
             Spacer()
         }
         .padding()
-        .frame(minWidth: 700, minHeight: 410)
+        .frame(minWidth: 700, minHeight: 350)
         .onAppear {
             // initial setting
             updateAll(fromDate: Date())
@@ -283,16 +292,17 @@ struct ContentView: View {
     
     
     // Convert: ISO 8601 string -> Date
-    func ISO8601ToDate(_ string: String) -> Date? {
+    func iso8601ToDate(_ iso8601Sstring: String) -> Date? {
         let formatter = ISO8601DateFormatter()
         
         formatter.formatOptions = [.withInternetDateTime]
         
-        let tzInputString = String(string.suffix(6))
-        updateTimeZone(fromString: tzInputString)
+        if let index = iso8601Sstring.lastIndex(where: { $0 == "+" || $0 == "-"}) {
+            updateTimeZone(fromString: String(iso8601Sstring[index...]))
+        }
         formatter.timeZone = TimeZone(secondsFromGMT: Int(tzDouble * 3600))
         
-        return formatter.date(from: string)
+        return formatter.date(from: iso8601Sstring)
     }
     
     
@@ -308,3 +318,15 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
+//extension View {
+//    @ViewBuilder
+//    func liquidGlassIfAvailable() -> some View {
+//        if #available(macOS 26.0, *) {
+//            self.glassEffect()
+//        } else {
+//            self
+//        }
+//    }
+//}
+//
