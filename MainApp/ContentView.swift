@@ -153,6 +153,7 @@ struct ContentView: View {
                     }
                     
                     Divider()
+                        .frame(width: 20, height: 20)
                     
                     HStack(spacing: 0) {
                         Text("Format:")
@@ -169,8 +170,10 @@ struct ContentView: View {
                         }
                     }
                 }
+                .padding(5)
             }
-            .padding(15)
+            
+            Spacer()
             
             // MARK: JD Section
             GroupBox(label: Label("Julian Date (JD)", systemImage: "number.square")) {
@@ -192,7 +195,7 @@ struct ContentView: View {
                     .buttonStyle(.plain)
                     .help("Copy JD")
                 }
-                .padding(10)
+                .padding(5)
             }
             
             // MARK: MJD Section
@@ -216,7 +219,7 @@ struct ContentView: View {
                     .buttonStyle(.plain)
                     .help("Copy MJD")
                 }
-                .padding(10)
+                .padding(5)
             }
             
             Spacer()
