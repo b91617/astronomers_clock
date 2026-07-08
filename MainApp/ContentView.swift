@@ -56,13 +56,18 @@ struct ContentView: View {
     // BODY //
     var body: some View {
         VStack(spacing: 20) {
-//            Picker("", selection: $selectedTool) {
-//                Text("Date Converter").tag(0)
-//                Text("Coordinate Conversion").tag(1)
-//                Text("Distance & Magnitude Calculator").tag(2)
-//            }
-//            .pickerStyle(.segmented)
-//            .liquidGlassIfAvailable()
+           HStack {
+               Spacer()
+               
+               Picker("", selection: $selectedTool) {
+                   Text("Date Converter").tag(0)
+                   Text("Coordinate Conversion").tag(1)
+                   Text("Distance & Magnitude Calculator").tag(2)
+               }
+               .pickerStyle(.segmented)
+               
+               Spacer()
+           }
             
             // MARK: - Header
             HStack {
@@ -90,6 +95,7 @@ struct ContentView: View {
                         DatePicker("", selection: datePickerBinding, displayedComponents: [.date, .hourAndMinute])
                             .labelsHidden()
                             .datePickerStyle(.stepperField)
+                            .frame(minWidth: 150)
                             .environment(\.timeZone, TimeZone(secondsFromGMT: Int(tzDouble * 3600))!)
                             .environment(\.locale, Locale(identifier: "en-CA"))
                             .onChange(of: selectedDate) {
@@ -173,7 +179,6 @@ struct ContentView: View {
                 .padding(5)
             }
             
-            Spacer()
             
             // MARK: JD Section
             GroupBox(label: Label("Julian Date (JD)", systemImage: "number.square")) {
@@ -225,7 +230,7 @@ struct ContentView: View {
             Spacer()
         }
         .padding()
-        .frame(minWidth: 600, minHeight: 380)
+        .frame(minWidth: 600, minHeight: 400)
         .onAppear {
             // initial setting
             updateAll(fromDate: Date())
@@ -320,17 +325,17 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .frame(width: 600, height: 380)
+        .frame(width: 600, height: 400)
 }
 
-//extension View {
-//    @ViewBuilder
-//    func liquidGlassIfAvailable() -> some View {
-//        if #available(macOS 26.0, *) {
-//            self.glassEffect()
-//        } else {
-//            self
-//        }
-//    }
-//}
-//
+extension View {
+    @ViewBuilder
+    func liquidGlassIfAvailable() -> some View {
+        if #available(macOS 26.0, *) {
+            self.glassEffect()
+        } else {
+            self
+        }
+    }
+}
+
